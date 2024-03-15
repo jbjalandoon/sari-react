@@ -1,38 +1,62 @@
+import { useState } from "react";
+import LoginAction from "./LoginAction";
+import LoginInput from "./LoginInput";
+import { Route } from "../../routes/login";
+import { useNavigate } from "@tanstack/react-router";
+import Alert from "../alert/Alert";
+
 export default function Login() {
+  const context = Route.useLoaderData();
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function handleClientLogin() {
+    try {
+      const url = "http://localhost:8080/auth/login";
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      if (response.status >= 400) {
+        console.log(await response.json());
+        throw new Error(`Error ${response.status}`);
+      }
+
+      const { user } = await response.json();
+
+      context.user.email = user.email;
+      context.user.username = user.username;
+      context.user.role = user.role;
+      context.user.isAuthenticated = true;
+      context.user.id = user._id;
+
+      navigate({ to: "/" });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="container flex flex-col justify-center items-center w-100 h-lvh text-slate-800">
       <div className="bg-white p-9 rounded min-w-[500px] flex flex-col items-center justify-center gap-10 shadow-xl">
         <div className="text-3xl font-bold">LOGIN</div>
-        <div className="flex flex-col gap-5 w-full">
-          <div className="flex flex-col gap-2 text-lg">
-            <label>Username</label>
-            <input
-              type="text"
-              className="h-10 w-full border border-black rounded-xl p-2 focus:outline-none focus:border-2 focus:border-blue-600"
-              placeholder="JohnDoe"
-            ></input>
-          </div>
-          <div className="flex flex-col gap-3 text-lg">
-            <label>Password</label>
-            <input
-              type="password"
-              className="h-10 w-full border border-black rounded-xl p-2 focus:outline-none focus:border-2 focus:border-blue-600"
-              placeholder="****"
-            ></input>
-          </div>
-          <a
-            href="#"
-            className="underline text-blue-800 min-w-max max-w-min inline"
-          >
-            Forgot Password?
-          </a>
-        </div>
-        <div className="flex flex-col w-full">
-          <button className="w-full rounded-xl bg-blue-800 p-3 text-xl text-white font-medium">
-            Login
-          </button>
-        </div>
+        <LoginInput
+          username={username}
+          password={password}
+          setUsername={setUsername}
+          setPassword={setPassword}
+        />
+        <LoginAction onLogin={handleClientLogin} />
       </div>
+      <Alert message="Authentication Failed" />
     </div>
   );
 }

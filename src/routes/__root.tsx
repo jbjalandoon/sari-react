@@ -1,13 +1,30 @@
-import { Link, Outlet, createRootRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 
-export const Route = createRootRoute({
+type RouteContextInterface = {
+  user: User;
+};
+
+export type User = {
+  id: string | null;
+  username: string | null;
+  email: string | null;
+  isAuthenticated: boolean;
+  role: string | null;
+};
+
+export const Route = createRootRouteWithContext<RouteContextInterface>()({
+  beforeLoad: () => {
+    
+  },
   component: () => (
-    <div>
-      <Link to="/">Index</Link>
-      <Link to="/login">Go to Login</Link>
-      <Link to="/forgot-password">Forgot Password</Link>
+    <div className="flex gap-10 flex-col justify-center items-center">
+      <div>
+        <Link to={"/"}> Index </Link>
+        <Link to={"/login"}> Login </Link>
+        <Link to={"/logout"}> Logout </Link>
+      </div>
       <Outlet />
     </div>
   ),
 });
-
