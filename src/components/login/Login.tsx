@@ -8,6 +8,10 @@ import Alert from "../alert/Alert";
 export default function Login() {
   const context = Route.useLoaderData();
   const navigate = useNavigate();
+  const [loginStatus, setLoginStatus] = useState({
+    isFailed: false,
+    message: "",
+  });
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -26,8 +30,8 @@ export default function Login() {
       });
 
       if (response.status >= 400) {
-        console.log(await response.json());
-        throw new Error(`Error ${response.status}`);
+        const { errorMessage } = await response.json();
+        throw errorMessage;
       }
 
       const { user } = await response.json();
@@ -40,7 +44,10 @@ export default function Login() {
 
       navigate({ to: "/" });
     } catch (error) {
-      console.log(error);
+      setLoginStatus({
+        isFailed: true,
+        message: error as string,
+      });
     }
   }
 
@@ -56,7 +63,7 @@ export default function Login() {
         />
         <LoginAction onLogin={handleClientLogin} />
       </div>
-      <Alert message="Authentication Failed" />
+      {loginStatus.message !== "" && <Alert message={loginStatus.message} />}
     </div>
   );
 }
