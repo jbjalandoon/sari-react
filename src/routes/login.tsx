@@ -3,13 +3,12 @@ import LoginComponent from "../components/login/Login";
 
 export const Route = createFileRoute("/login")({
   beforeLoad: ({ context }) => {
-    const { user } = context;
-    console.log(user.isAuthenticated);
-    if (user.isAuthenticated) {
+    const { auth } = context;
+    console.log(context);
+    if (auth.user.isAuthenticated) {
       throw redirect({ to: "/" });
     }
   },
-  loader: ({ context }) => context,
   component: Login,
 });
 

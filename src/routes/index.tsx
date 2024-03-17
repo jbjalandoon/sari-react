@@ -1,15 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: async ({ context }) => {
-    const { user } = context;
-    if (!user.isAuthenticated) {
-      throw redirect({
-        to: "/login",
-      });
-    }
-  },
   component: Index,
   loader:
     ({ context }) =>
@@ -19,5 +10,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  console.log("hello world from index");
+
   return <p>this is index</p>;
 }
