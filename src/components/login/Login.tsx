@@ -1,13 +1,13 @@
 import { useState } from "react";
 import LoginAction from "./LoginAction";
 import LoginInput from "./LoginInput";
-import { Route } from "../../routes/login";
 import { useNavigate } from "@tanstack/react-router";
 import Alert from "../alert/Alert";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
-  const context = Route.useLoaderData();
   const navigate = useNavigate();
+  const auth = useAuth();
   const [loginStatus, setLoginStatus] = useState({
     isFailed: false,
     message: "",
@@ -23,6 +23,7 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           username,
           password,
@@ -36,13 +37,17 @@ export default function Login() {
 
       const { user } = await response.json();
 
-      context.user.email = user.email;
-      context.user.username = user.username;
-      context.user.role = user.role;
-      context.user.isAuthenticated = true;
-      context.user.id = user._id;
+      auth.setUser({
+        isAuthenticated: true,
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+        },
+      });
 
-      navigate({ to: "/" });
+      return navigate({ to: "/" });
     } catch (error) {
       setLoginStatus({
         isFailed: true,
