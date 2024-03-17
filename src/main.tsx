@@ -24,6 +24,7 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 function InnerApp() {
   const auth = useAuth();
 
