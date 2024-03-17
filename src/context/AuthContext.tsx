@@ -15,14 +15,14 @@ export type User = {
 
 export type AuthenticationContext = {
   user: {
-    user: User;
+    user: User | null;
     isAuthenticated: boolean;
-  } | null;
+  };
   setUser: Dispatch<
     React.SetStateAction<{
-      user: User;
+      user: User | null;
       isAuthenticated: boolean;
-    } | null>
+    }>
   >;
 };
 
@@ -30,9 +30,12 @@ const AuthenticationContext = createContext<AuthenticationContext | null>(null);
 
 export function AuthenticationProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<{
-    user: User;
+    user: User | null;
     isAuthenticated: boolean;
-  } | null>(null);
+  }>({
+    user: null,
+    isAuthenticated: false,
+  });
 
   return (
     <AuthenticationContext.Provider value={{ user, setUser }}>
