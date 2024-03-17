@@ -1,30 +1,103 @@
-import { Link } from "@tanstack/react-router";
+import { Link, redirect, useNavigate } from "@tanstack/react-router";
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { AuthenticationContext, useAuth } from "../context/AuthContext";
 
-type RouteContextInterface = {
-  user: User;
+export type RouterContext = {
+  auth: AuthenticationContext;
 };
 
-export type User = {
-  id: string | null;
-  username: string | null;
-  email: string | null;
-  isAuthenticated: boolean;
-  role: string | null;
-};
+export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async ({ context, location }) => {
+    try {
+      const { auth } = context;
+      const { pathname } = location;
 
-export const Route = createRootRouteWithContext<RouteContextInterface>()({
-  beforeLoad: () => {
-    
+      const response = await fetch(
+        "http://localhost:8080/auth/initial-authentication",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (response.status >= 400) {
+        if (pathname === "/login") {
+          return context;
+        }
+        return redirect({ to: "/login", throw: false });
+      }
+      const { user } = await response.json();
+      auth.setUser({
+        isAuthenticated: false,
+        user: {
+          id: user._id,
+          email: user.email,
+          username: user.username,
+          role: user.role,
+        },
+      });
+
+      return context;
+    } catch (error) {
+      return redirect({ to: "/login", throw: false });
+    }
   },
-  component: () => (
-    <div className="flex gap-10 flex-col justify-center items-center">
-      <div>
-        <Link to={"/"}> Index </Link>
-        <Link to={"/login"}> Login </Link>
-        <Link to={"/logout"}> Logout </Link>
-      </div>
-      <Outlet />
-    </div>
-  ),
+  component: RootComponent,
 });
+
+function RootComponent() {
+  const navigate = useNavigate();
+  const auth = useAuth();
+
+  async function handleLogout() {
+    try {
+      const response = await fetch("http://localhost:8080/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (response.status >= 400) {
+        throw new Error("Something went wrong in logout functionality");
+      }
+
+      auth.setUser({
+        user: null,
+        isAuthenticated: false,
+      });
+
+      return navigate({ to: "/login" });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-20 w-full items-center">
+      <div className="w-full flex justify-center items-center bg-slate-200 h-20">
+        <div className="container flex justify-center text-slate-950">
+          <ul className="flex gap-6 justify-center">
+            <li>
+              <Link>Home</Link>
+            </li>
+            <li>
+              <a href="#" onClick={handleLogout}>
+                Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="container pr-10 pl-10">
+        <Outlet />
+      </div>
+      <TanStackRouterDevtools />
+    </div>
+  );
+}
