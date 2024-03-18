@@ -4,7 +4,6 @@ import LoginComponent from "../components/login/Login";
 export const Route = createFileRoute("/login")({
   beforeLoad: ({ context }) => {
     const { auth } = context;
-    console.log(context);
     if (auth.user.isAuthenticated) {
       throw redirect({ to: "/" });
     }

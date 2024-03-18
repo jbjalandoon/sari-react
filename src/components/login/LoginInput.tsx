@@ -1,41 +1,43 @@
-import { ChangeEvent, Dispatch } from "react";
+import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { LoginFormType } from "./LoginForm";
 
 export default function LoginInput({
-  username,
-  password,
-  setPassword,
-  setUsername,
+  register,
+  errors,
 }: {
-  username: string;
-  password: string;
-  setPassword: Dispatch<React.SetStateAction<string>>;
-  setUsername: Dispatch<React.SetStateAction<string>>;
+  register: UseFormRegister<LoginFormType>;
+  errors: FieldErrors<LoginFormType>;
 }) {
   return (
-    <div className="flex flex-col gap-5 w-full">
-      <div className="flex flex-col gap-2 text-lg">
+    <div className="flex flex-col gap-4 w-full">
+      {errors.root && (
+        <div className="flex w-full h-16 border justify-center items-center text-md font-medium bg-red-300">
+          <p>{errors.root.message}</p>
+        </div>
+      )}
+      <div className="flex flex-col gap-1 text-lg">
         <label>Username</label>
         <input
           type="text"
           className="h-10 w-full border border-black rounded-xl p-2 focus:outline-none focus:border-2 focus:border-blue-600"
           placeholder="JohnDoe"
-          value={username}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            setUsername(event?.currentTarget.value);
-          }}
+          {...register("username")}
         ></input>
+        {errors.username && (
+          <div className="text-red-700 text-sm">{errors.username.message}</div>
+        )}
       </div>
-      <div className="flex flex-col gap-3 text-lg">
+      <div className="flex flex-col gap-1 text-lg">
         <label>Password</label>
         <input
           type="password"
           className="h-10 w-full border border-black rounded-xl p-2 focus:outline-none focus:border-2 focus:border-blue-600"
           placeholder="****"
-          value={password}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            setPassword(event?.currentTarget.value);
-          }}
+          {...register("password")}
         ></input>
+        {errors.password && (
+          <div className="text-red-700 text-sm">{errors.password.message}</div>
+        )}
       </div>
       <a
         href="#"

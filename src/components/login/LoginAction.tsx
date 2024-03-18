@@ -1,13 +1,14 @@
 export default function LoginAction({
-  onLogin,
+  isSubmitting,
 }: {
-  onLogin: () => Promise<void>;
+  isSubmitting: boolean;
 }) {
   return (
     <div className="flex flex-col w-full">
       <button
+        disabled={isSubmitting}
+        type="submit"
         className="w-full rounded-xl bg-blue-800 p-3 text-xl text-white font-medium"
-        onClick={onLogin}
       >
         Login
       </button>

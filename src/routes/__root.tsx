@@ -25,6 +25,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       );
 
       if (response.status >= 400) {
+        auth.setUser({
+          isAuthenticated: false,
+          user: null,
+        });
+
         if (pathname === "/login") {
           return context;
         }
@@ -32,7 +37,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       }
       const { user } = await response.json();
       auth.setUser({
-        isAuthenticated: false,
+        isAuthenticated: true,
         user: {
           id: user._id,
           email: user.email,
@@ -77,23 +82,24 @@ function RootComponent() {
       console.log(error);
     }
   }
-
   return (
     <div className="flex flex-col gap-20 w-full items-center">
-      <div className="w-full flex justify-center items-center bg-slate-200 h-20">
-        <div className="container flex justify-center text-slate-950">
-          <ul className="flex gap-6 justify-center">
-            <li>
-              <Link>Home</Link>
-            </li>
-            <li>
-              <a href="#" onClick={handleLogout}>
-                Logout
-              </a>
-            </li>
-          </ul>
+      {auth.user.isAuthenticated && (
+        <div className="w-full flex justify-center items-center bg-slate-200 h-20">
+          <div className="container flex justify-center text-slate-950">
+            <ul className="flex gap-6 justify-center">
+              <li>
+                <Link>Home</Link>
+              </li>
+              <li>
+                <a href="#" onClick={handleLogout}>
+                  Logout
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
       <div className="container pr-10 pl-10">
         <Outlet />
       </div>
