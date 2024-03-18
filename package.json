@@ -10,12 +10,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "@tanstack/react-router": "^1.19.13",
+    "@tanstack/router-devtools": "^1.20.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.51.1",
+    "validator": "^13.11.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@tanstack/router-vite-plugin": "^1.19.6",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
+    "@types/validator": "^13.11.9",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "@vitejs/plugin-react": "^4.2.1",
